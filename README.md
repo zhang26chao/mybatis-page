@@ -1,1 +1,1 @@
-MyBatis分页插件
+MyBatis page plugin support MyBatis3.4

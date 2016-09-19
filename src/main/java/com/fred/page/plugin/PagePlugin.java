@@ -25,7 +25,9 @@ import org.apache.ibatis.plugin.Intercepts;
 import org.apache.ibatis.plugin.Invocation;
 import org.apache.ibatis.plugin.Plugin;
 import org.apache.ibatis.plugin.Signature;
+import org.apache.ibatis.reflection.DefaultReflectorFactory;
 import org.apache.ibatis.reflection.MetaObject;
+import org.apache.ibatis.reflection.ReflectorFactory;
 import org.apache.ibatis.reflection.factory.DefaultObjectFactory;
 import org.apache.ibatis.reflection.factory.ObjectFactory;
 import org.apache.ibatis.reflection.wrapper.DefaultObjectWrapperFactory;
@@ -45,9 +47,9 @@ public class PagePlugin implements Interceptor {
 
 	private final static ObjectFactory DEFAULT_OBJECT_FACTORY = new DefaultObjectFactory();
 	private final static ObjectWrapperFactory DEFAULT_OBJECT_WRAPPER_FACTORY = new DefaultObjectWrapperFactory();
+	private final static ReflectorFactory DEFAULT_REFLECTOR_FACTORY = new DefaultReflectorFactory();
 	private final static int MAPPED_STATEMENT_INDEX = 0;
 	private final static int PARAMETER_INDEX = 1;
-	private final static int ROWBOUNDS_INDEX = 2;
 
 	private Dialect dialect = new MySqlDialect();
 
@@ -87,15 +89,12 @@ public class PagePlugin implements Interceptor {
 		queryCount(ms, boundSql, page);
 		int offset = page.getIndex();
 		int limit = page.getPageSize();
-		// 将SQL替换为分页查询的SQL
+		// replace original sql with page sql
 		String pageSql = dialect.getLimitString(boundSql.getSql(), offset,
 				limit);
 		BoundSql pageBoundSql = changeBoundSql(ms, boundSql, pageSql,
 				new RowBounds(page.getIndex(), page.getPageSize()));
-		// 替换方法的参数:替换掉RowBounds
-		queryArgs[ROWBOUNDS_INDEX] = new RowBounds(RowBounds.NO_ROW_OFFSET,
-				RowBounds.NO_ROW_LIMIT);
-		// 替换掉MappedStatement,将其中的sql替换成分页的SQL,参数映射增加分页的参数映射
+		// replace original MappedStatement with page MappedStatement
 		queryArgs[MAPPED_STATEMENT_INDEX] = modifyMappedStatement(ms,
 				new SimpleSqlSource(pageBoundSql));
 		return invocation.proceed();
@@ -185,14 +184,16 @@ public class PagePlugin implements Interceptor {
 				boundSql.getParameterMappings());
 		BoundSql newBoundSql = new BoundSql(ms.getConfiguration(), sql,
 				mappings.getParameterMappings(), boundSql.getParameterObject());
-
 		MetaObject countBsObject = MetaObject.forObject(newBoundSql,
-				DEFAULT_OBJECT_FACTORY, DEFAULT_OBJECT_WRAPPER_FACTORY);
+				DEFAULT_OBJECT_FACTORY, DEFAULT_OBJECT_WRAPPER_FACTORY,
+				DEFAULT_REFLECTOR_FACTORY);
 		MetaObject boundSqlObject = MetaObject.forObject(boundSql,
-				DEFAULT_OBJECT_FACTORY, DEFAULT_OBJECT_WRAPPER_FACTORY);
+				DEFAULT_OBJECT_FACTORY, DEFAULT_OBJECT_WRAPPER_FACTORY,
+				DEFAULT_REFLECTOR_FACTORY);
 		countBsObject.setValue("metaParameters",
 				boundSqlObject.getValue("metaParameters"));
-
+		countBsObject.setValue("additionalParameters",
+				boundSqlObject.getValue("additionalParameters"));
 		newBoundSql.setAdditionalParameter("offset", rowBounds.getOffset());
 		newBoundSql.setAdditionalParameter("limit", getMaxOrLimit(rowBounds));
 		return newBoundSql;
