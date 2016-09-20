@@ -3,7 +3,7 @@ README
 MyBatis page plugin support MyBatis3.4.x
 #Usage
 #####1. Configuration  
-    + With Spring  
+* With Spring  
     ```Xml
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">  
         <property name="dataSource" ref="dataSource" />  
@@ -18,8 +18,8 @@ MyBatis page plugin support MyBatis3.4.x
 	    </property>
 	    <property name="mapperLocations" value="classpath*:mybatis/*Mapper.xml" />
     </bean>
-    ```
-    + With Spring Boot  
+    ```  
+    * With Spring Boot  
     ```Java
     @Bean(name = "sqlSessionFactory")
     public SqlSessionFactory sqlSessionFactory(@Qualifier("dataSourceWrite") DataSource dataSource) throws Exception {
