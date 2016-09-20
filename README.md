@@ -1,1 +1,3 @@
-MyBatis page plugin support MyBatis3.4 test
+README
+====
+MyBatis page plugin support MyBatis3.4
