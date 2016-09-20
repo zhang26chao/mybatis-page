@@ -2,7 +2,16 @@ README
 ====
 MyBatis page plugin support MyBatis3.4.x
 #Usage
-#####1. Configuration  
+#####1. Dependency  
+```Xml
+<dependency>
+	<groupId>com.fred</groupId>
+	<artifactId>mybatis-page</artifactId>
+	<version>0.0.1</version>
+</dependency>
+```
+
+#####2. Configuration  
 * With Spring  
     ```Xml
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">  
@@ -35,7 +44,7 @@ MyBatis page plugin support MyBatis3.4.x
 	}
     ```  
     
-#####2. Example  
+#####3. Example  
 * Mapper.xml  
 ```Xml
 	<select id="queryAll" resultType="com.fred.pojo.User">
