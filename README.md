@@ -20,7 +20,7 @@ MyBatis page plugin support MyBatis3.4.x.Both support DB2 and MySql database.
     	    <list>
 			    <bean class="com.fred.page.plugin.PagePlugin">
 				    <property name="dialect">
-                                            <!-- or DB2Dialect -->
+    					<!-- or DB2Dialect -->
 					    <bean class="com.fred.page.dialect.MySqlDialect" />
 			    	</property>
 			    </bean>
@@ -37,7 +37,7 @@ MyBatis page plugin support MyBatis3.4.x.Both support DB2 and MySql database.
 		SqlSessionFactoryBean sessionFactoryBean = new SqlSessionFactoryBean();
 		sessionFactoryBean.setDataSource(dataSource);
 		PagePlugin pagePlugin = new PagePlugin();
-                // or DB2Dialect
+    	// or DB2Dialect
 		pagePlugin.setDialect(new MySqlDialect());
 		sessionFactoryBean.setPlugins(new Interceptor[] { pagePlugin });
 		PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
