@@ -99,18 +99,19 @@ public class UserController {
 	
 	@RequestMapping("page/{pageNumber}")
 	public ModelAndView queryAll(@PathVariable("pageNumber") Integer pageNumber) {
-		DalPage<> page = new DalPage<>();
+		DalPage page = new DalPage();
 		page.setCurrentPage(pageNumber);
 		List<User> list = userService.queryAll(page);
 		ModelAndView mav = new ModelAndView("user/list");
 		mav.addObject("list", list);
+		// the pagination information were saved in page Object,see DalPage Class.
 		mav.addObject("page", page);
 		return mav;
 	}
 
 	@RequestMapping("{id}/page/{pageNumber}")
 	public ModelAndView queryAll(@PathVariable("id") String id,@PathVariable("pageNumber") Integer pageNumber) {
-		DalPage<> page = new DalPage<>();
+		DalPage page = new DalPage();
 		page.setCurrentPage(pageNumber);
 		// With multi query condition must use Map parameter
 		Map<String,Object> map = new HashMap<String,Object>();
