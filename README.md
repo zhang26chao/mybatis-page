@@ -11,7 +11,7 @@ MyBatis page plugin support MyBatis3.4.x
     	    <list>
 			    <bean class="com.fred.page.plugin.PagePlugin">
 				    <property name="dialect">
-					    <bean class="com.fred.page.dialect.MySqlDialect "></bean>
+					    <bean class="com.fred.page.dialect.MySqlDialect" />
 			    	</property>
 			    </bean>
 		    </list>
@@ -112,6 +112,7 @@ public class UserController {
 	public ModelAndView queryAll(@PathVariable("id") String id,@PathVariable("pageNumber") Integer pageNumber) {
 		DalPage<> page = new DalPage<>();
 		page.setCurrentPage(pageNumber);
+		// With multi query condition must use Map parameter
 		Map<String,Object> map = new HashMap<String,Object>();
 		map.put("id",id);
 		map.put("page",page);
