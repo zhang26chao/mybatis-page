@@ -1,13 +1,13 @@
 README
 ====
-MyBatis page plugin support MyBatis3.4.x
+MyBatis page plugin support MyBatis3.4.x.Both support DB2 and MySql database.
 #Usage
 #####1. Dependency  
 ```Xml
 <dependency>
 	<groupId>com.fred</groupId>
 	<artifactId>mybatis-page</artifactId>
-	<version>0.0.1</version>
+	<version>0.0.1-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -20,6 +20,7 @@ MyBatis page plugin support MyBatis3.4.x
     	    <list>
 			    <bean class="com.fred.page.plugin.PagePlugin">
 				    <property name="dialect">
+                                            <!-- or DB2Dialect -->
 					    <bean class="com.fred.page.dialect.MySqlDialect" />
 			    	</property>
 			    </bean>
@@ -36,6 +37,7 @@ MyBatis page plugin support MyBatis3.4.x
 		SqlSessionFactoryBean sessionFactoryBean = new SqlSessionFactoryBean();
 		sessionFactoryBean.setDataSource(dataSource);
 		PagePlugin pagePlugin = new PagePlugin();
+                // or DB2Dialect
 		pagePlugin.setDialect(new MySqlDialect());
 		sessionFactoryBean.setPlugins(new Interceptor[] { pagePlugin });
 		PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
@@ -47,95 +49,4 @@ MyBatis page plugin support MyBatis3.4.x
 #####3. Example  
 * Mapper.xml  
 ```Xml
-	<select id="queryAll" resultType="com.fred.pojo.User">
-        select
-        	ID as id,
-			USERNAME as username,
-			PASSWORD as password
-		from
-			USER
-    </select>
-	
-	<select id="queryById" resultType="com.fred.pojo.User">
-        select
-        	ID as id,
-			USERNAME as username,
-			PASSWORD as password
-		where
-			ID = #{id}
-		from
-			USER
-    </select>
-```  
-
-* Mapper.java  
-```Java
-@Mapper
-public interface UserMapper {
-	
-	public List<User> queryAll(DalPage page);
-	
-	public List<User> queryById(Map<String,Object> map);
-	
-}
-```  
-* Service.java
-```Java
-@Service
-public class UserService {
-
-	@Autowired
-	private UserMapper userMapper;
-
-	public List<User> queryAll(DalPage page) {
-		return userMapper.queryAll(page);
-	}
-	
-	public List<User> queryById(Map<String,Object> map) {
-		return userMapper.queryById(map);
-	}
-	
-}
-```  
-* Controller.java
-```Java
-@Controller
-@RequestMapping("/user")
-public class UserController {
-
-	@Autowired
-	private UserService userService;
-	
-	@RequestMapping("page/{pageNumber}")
-	public ModelAndView queryAll(@PathVariable("pageNumber") Integer pageNumber) {
-		DalPage page = new DalPage();
-		page.setCurrentPage(pageNumber);
-		List<User> list = userService.queryAll(page);
-		ModelAndView mav = new ModelAndView("user/list");
-		mav.addObject("list", list);
-		// the pagination information were saved in page Object,see DalPage Class.
-		mav.addObject("page", page);
-		return mav;
-	}
-
-	@RequestMapping("{id}/page/{pageNumber}")
-	public ModelAndView queryAll(@PathVariable("id") String id,@PathVariable("pageNumber") Integer pageNumber) {
-		DalPage page = new DalPage();
-		page.setCurrentPage(pageNumber);
-		// With multi query condition must use Map parameter
-		Map<String,Object> map = new HashMap<String,Object>();
-		map.put("id",id);
-		map.put("page",page);
-		List<User> list = userService.queryById(map);
-		ModelAndView mav = new ModelAndView("user/list");
-		mav.addObject("list", list);
-		mav.addObject("page", page);
-		return mav;
-	}
-	
-}
-```
-
-    
-
-
+	<select id="queryAll" resultType="com.fred.pojo.User
