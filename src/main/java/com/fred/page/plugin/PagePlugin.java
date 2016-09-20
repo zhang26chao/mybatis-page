@@ -37,7 +37,6 @@ import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 
 import com.fred.page.dialect.Dialect;
-import com.fred.page.dialect.MySqlDialect;
 import com.fred.page.domain.DalPage;
 
 @Intercepts({ @Signature(type = Executor.class, method = "query", args = {
@@ -51,7 +50,7 @@ public class PagePlugin implements Interceptor {
 	private final static int MAPPED_STATEMENT_INDEX = 0;
 	private final static int PARAMETER_INDEX = 1;
 
-	private Dialect dialect = new MySqlDialect();
+	private Dialect dialect;
 
 	public Dialect getDialect() {
 		return dialect;
@@ -234,13 +233,8 @@ public class PagePlugin implements Interceptor {
 	}
 
 	private int getMaxOrLimit(RowBounds rowBounds) {
-		final int firstRow = rowBounds.getOffset();
-		final int limit = rowBounds.getLimit();
-		if (dialect.useMaxForLimit()) {
-			return firstRow + limit;
-		} else {
-			return limit;
-		}
+		return dialect.useMaxForLimit() ? rowBounds.getOffset()
+				+ rowBounds.getLimit() : rowBounds.getLimit();
 	}
 
 	@Override
