@@ -2,7 +2,7 @@ README
 ====
 MyBatis page plugin support MyBatis3.4.x
 #Usage
-1. #####Configuration  
+#####1. Configuration  
     + With Spring  
     ```Xml
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">  
@@ -33,7 +33,7 @@ MyBatis page plugin support MyBatis3.4.x
 		return sessionFactoryBean.getObject();
 	}
     ```  
-2. #####Example  
+#####2. Example  
 
     
 
