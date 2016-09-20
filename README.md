@@ -19,6 +19,7 @@ MyBatis page plugin support MyBatis3.4.x
 	    <property name="mapperLocations" value="classpath*:mybatis/*Mapper.xml" />
     </bean>
     ```  
+    
 * With Spring Boot  
     ```Java
     @Bean(name = "sqlSessionFactory")
