@@ -19,7 +19,7 @@ MyBatis page plugin support MyBatis3.4.x
 	    <property name="mapperLocations" value="classpath*:mybatis/*Mapper.xml" />
     </bean>
     ```  
-    * With Spring Boot  
+* With Spring Boot  
     ```Java
     @Bean(name = "sqlSessionFactory")
     public SqlSessionFactory sqlSessionFactory(@Qualifier("dataSourceWrite") DataSource dataSource) throws Exception {
