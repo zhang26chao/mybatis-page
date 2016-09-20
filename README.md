@@ -109,7 +109,7 @@ public class UserController {
 	}
 
 	@RequestMapping("{id}/page/{pageNumber}")
-	public ModelAndView queryAll(@PathVariable("id") String pageNumber,@PathVariable("pageNumber") Integer pageNumber) {
+	public ModelAndView queryAll(@PathVariable("id") String id,@PathVariable("pageNumber") Integer pageNumber) {
 		DalPage<> page = new DalPage<>();
 		page.setCurrentPage(pageNumber);
 		Map<String,Object> map = new HashMap<String,Object>();
