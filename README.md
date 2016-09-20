@@ -36,6 +36,28 @@ MyBatis page plugin support MyBatis3.4.x
     ```  
     
 #####2. Example  
+* Mapper.xml  
+```Xml
+	<select id="queryAll" resultType="com.fred.pojo.User">
+        select
+        	ID as id,
+			USERNAME as username,
+			PASSWORD as password
+		from
+			USER
+    </select>
+	
+	<select id="queryById" resultType="com.fred.pojo.User">
+        select
+        	ID as id,
+			USERNAME as username,
+			PASSWORD as password
+		where
+			ID = #{id}
+		from
+			USER
+    </select>
+```
 
     
 
