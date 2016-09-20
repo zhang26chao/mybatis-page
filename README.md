@@ -57,6 +57,72 @@ MyBatis page plugin support MyBatis3.4.x
 		from
 			USER
     </select>
+```  
+
+* Mapper.java  
+```Java
+@Mapper
+public interface UserMapper {
+	
+	public List<User> queryAll(DalPage page);
+	
+	public List<User> queryById(Map<String,Object> map);
+	
+}
+```  
+* Service.java
+```Java
+@Service
+public class UserService {
+
+	@Autowired
+	private UserMapper userMapper;
+
+	public List<User> queryAll(DalPage page) {
+		return userMapper.queryAll(page);
+	}
+	
+	public List<User> queryById(Map<String,Object> map) {
+		return userMapper.queryById(map);
+	}
+	
+}
+```  
+* Controller.java
+```Java
+@Controller
+@RequestMapping("/user")
+public class UserController {
+
+	@Autowired
+	private UserService userService;
+	
+	@RequestMapping("page/{pageNumber}")
+	public ModelAndView queryAll(@PathVariable("pageNumber") Integer pageNumber) {
+		DalPage<> page = new DalPage<>();
+		page.setCurrentPage(pageNumber);
+		List<User> list = userService.queryAll(page);
+		ModelAndView mav = new ModelAndView("user/list");
+		mav.addObject("list", list);
+		mav.addObject("page", page);
+		return mav;
+	}
+
+	@RequestMapping("{id}/page/{pageNumber}")
+	public ModelAndView queryAll(@PathVariable("id") String pageNumber,@PathVariable("pageNumber") Integer pageNumber) {
+		DalPage<> page = new DalPage<>();
+		page.setCurrentPage(pageNumber);
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("id",id);
+		map.put("page",page);
+		List<User> list = userService.queryById(map);
+		ModelAndView mav = new ModelAndView("user/list");
+		mav.addObject("list", list);
+		mav.addObject("page", page);
+		return mav;
+	}
+	
+}
 ```
 
     
