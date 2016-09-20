@@ -34,6 +34,7 @@ MyBatis page plugin support MyBatis3.4.x
 		return sessionFactoryBean.getObject();
 	}
     ```  
+    
 #####2. Example  
 
     
