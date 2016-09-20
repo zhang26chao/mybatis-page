@@ -1,6 +1,6 @@
 README
 ====
-MyBatis page plugin support MyBatis3.4.x
+MyBatis page plugin support MyBatis3.4.x.Both support DB2 and MySQL database.
 #Usage
 #####1. Dependency  
 ```Xml
