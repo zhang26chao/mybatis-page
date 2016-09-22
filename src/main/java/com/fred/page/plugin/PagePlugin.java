@@ -104,6 +104,14 @@ public class PagePlugin implements Interceptor {
 		return null;
 	}
 
+	/**
+	 * If in Spring environment,spring will close the connection.If not,you must
+	 * close the connection by yourself
+	 * 
+	 * @param invocation
+	 * @return
+	 * @throws SQLException
+	 */
 	private Connection getConnection(Invocation invocation) throws SQLException {
 		Executor executor = (Executor) invocation.getTarget();
 		return executor.getTransaction().getConnection();
@@ -129,6 +137,7 @@ public class PagePlugin implements Interceptor {
 		} catch (Exception e) {
 			throw e;
 		} finally {
+			// maybe need to close the connection,see getConnection method
 			close(rs, countStmt);
 		}
 	}
