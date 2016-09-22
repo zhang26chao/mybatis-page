@@ -105,7 +105,7 @@ public class PagePlugin implements Interceptor {
 	}
 
 	/**
-	 * If in Spring environment,spring will close the connection.If not,you must
+	 * If in Spring environment,Spring will close the connection.If not,you must
 	 * close the connection by yourself
 	 * 
 	 * @param invocation
