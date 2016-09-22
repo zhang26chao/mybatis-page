@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -85,7 +86,11 @@ public class PagePlugin implements Interceptor {
 			return invocation.proceed();
 		}
 		// 计算总数
-		queryCount(ms, boundSql, page);
+		long totalCount = queryCount(getConnection(invocation), ms, boundSql);
+		if (totalCount == 0) {
+			return Collections.emptyList();
+		}
+		page.setCount(totalCount);
 		int offset = page.getIndex();
 		int limit = page.getPageSize();
 		// replace original sql with page sql
@@ -99,48 +104,49 @@ public class PagePlugin implements Interceptor {
 		return invocation.proceed();
 	}
 
-	private void queryCount(MappedStatement ms, BoundSql boundSql, DalPage page) {
-		Connection connection = null;
+	private Connection getConnection(Invocation invocation) throws SQLException {
+		Executor executor = (Executor) invocation.getTarget();
+		return executor.getTransaction().getConnection();
+	}
+
+	private long queryCount(Connection connection, MappedStatement ms,
+			BoundSql boundSql) throws Exception {
+		// Connection connection = null;
 		PreparedStatement countStmt = null;
 		ResultSet rs = null;
 		try {
 			String countSql = getCountSql(boundSql.getSql().trim());
-			connection = ms.getConfiguration().getEnvironment().getDataSource()
-					.getConnection();
+			// connection =
+			// ms.getConfiguration().getEnvironment().getDataSource().getConnection();
 			countStmt = connection.prepareStatement(countSql);
 			BoundSql countBS = copyFromBoundSql(ms, boundSql, countSql);
 			DefaultParameterHandler parameterHandler = new DefaultParameterHandler(
 					ms, boundSql.getParameterObject(), countBS);
 			parameterHandler.setParameters(countStmt);
 			rs = countStmt.executeQuery();
-			int totpage = 0;
+			long totalCount = 0;
 			if (rs.next()) {
-				totpage = rs.getInt(1);
+				totalCount = rs.getLong(1);
 			}
-			page.setCount(totpage);
+			return totalCount;
 		} catch (Exception e) {
-			// TODO: handle exception
+			throw e;
 		} finally {
-			if (rs != null) {
-				try {
-					rs.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
-			if (countStmt != null) {
-				try {
-					countStmt.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
-			if (connection != null) {
-				try {
-					connection.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
+			close(rs, countStmt);
+		}
+	}
+
+	/**
+	 * close database connection
+	 * 
+	 * @param closeable
+	 */
+	private void close(AutoCloseable... closeable) {
+		for (AutoCloseable autoCloseable : closeable) {
+			try {
+				autoCloseable.close();
+			} catch (Exception e) {
+				// ignore exception
 			}
 		}
 	}
