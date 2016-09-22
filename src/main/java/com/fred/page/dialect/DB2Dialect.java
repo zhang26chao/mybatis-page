@@ -8,7 +8,7 @@ package com.fred.page.dialect;
 public class DB2Dialect implements Dialect {
 
 	@Override
-	public String getLimitString(String sql, int offset, int limit) {
+	public String getLimitString(String sql) {
 		int startOfSelect = sql.toLowerCase().indexOf("select");
 		StringBuilder pagingSelect = new StringBuilder(sql.length() + 100)
 				.append(sql.substring(0, startOfSelect)) // add the comment

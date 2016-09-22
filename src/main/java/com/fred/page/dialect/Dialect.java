@@ -7,7 +7,7 @@ package com.fred.page.dialect;
 
 public interface Dialect {
 
-	String getLimitString(String sql, int offset, int limit);
+	String getLimitString(String sql);
 
 	boolean useMaxForLimit();
 

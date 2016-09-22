@@ -65,43 +65,43 @@ public class PagePlugin implements Interceptor {
 	public Object intercept(Invocation invocation) throws Throwable {
 		Object[] queryArgs = invocation.getArgs();
 		MappedStatement ms = (MappedStatement) queryArgs[MAPPED_STATEMENT_INDEX];
-		Object parameter = queryArgs[PARAMETER_INDEX];
-		BoundSql boundSql = ms.getBoundSql(parameter);
-		Object parameterObject = boundSql.getParameterObject();
-		DalPage page = null;
-		if (parameterObject instanceof Map<?, ?>) {
-			Map<?, ?> map = (Map<?, ?>) parameterObject;
-			for (Object object : map.values()) {
-				if (object instanceof DalPage) {
-					page = (DalPage) object;
-					break;
-				}
-			}
-		} else if (parameterObject instanceof DalPage) {
-			page = (DalPage) parameterObject;
-		} else {
-			return invocation.proceed();
-		}
+		BoundSql boundSql = ms.getBoundSql(queryArgs[PARAMETER_INDEX]);
+		DalPage page = getDalPage(boundSql.getParameterObject());
+		// if there is no DalPage parameter,skip
 		if (page == null) {
 			return invocation.proceed();
 		}
-		// 计算总数
 		long totalCount = queryCount(getConnection(invocation), ms, boundSql);
 		if (totalCount == 0) {
 			return Collections.emptyList();
 		}
 		page.setCount(totalCount);
-		int offset = page.getIndex();
-		int limit = page.getPageSize();
-		// replace original sql with page sql
-		String pageSql = dialect.getLimitString(boundSql.getSql(), offset,
-				limit);
-		BoundSql pageBoundSql = changeBoundSql(ms, boundSql, pageSql,
+		// replace original boundSql with page boundSql
+		boundSql = changeBoundSql(ms, boundSql,
+				dialect.getLimitString(boundSql.getSql()),
 				new RowBounds(page.getIndex(), page.getPageSize()));
 		// replace original MappedStatement with page MappedStatement
 		queryArgs[MAPPED_STATEMENT_INDEX] = modifyMappedStatement(ms,
-				new SimpleSqlSource(pageBoundSql));
+				new SimpleSqlSource(boundSql));
 		return invocation.proceed();
+	}
+
+	/*
+	 * get DalPage parameter
+	 */
+	private DalPage getDalPage(Object parameterObject) {
+		if (parameterObject instanceof DalPage) {
+			return (DalPage) parameterObject;
+		}
+		if (parameterObject instanceof Map<?, ?>) {
+			Map<?, ?> map = (Map<?, ?>) parameterObject;
+			for (Object object : map.values()) {
+				if (object instanceof DalPage) {
+					return (DalPage) object;
+				}
+			}
+		}
+		return null;
 	}
 
 	private Connection getConnection(Invocation invocation) throws SQLException {
@@ -111,13 +111,10 @@ public class PagePlugin implements Interceptor {
 
 	private long queryCount(Connection connection, MappedStatement ms,
 			BoundSql boundSql) throws Exception {
-		// Connection connection = null;
 		PreparedStatement countStmt = null;
 		ResultSet rs = null;
 		try {
 			String countSql = getCountSql(boundSql.getSql().trim());
-			// connection =
-			// ms.getConfiguration().getEnvironment().getDataSource().getConnection();
 			countStmt = connection.prepareStatement(countSql);
 			BoundSql countBS = copyFromBoundSql(ms, boundSql, countSql);
 			DefaultParameterHandler parameterHandler = new DefaultParameterHandler(
