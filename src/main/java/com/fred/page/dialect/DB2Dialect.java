@@ -13,7 +13,7 @@ public class DB2Dialect extends AbstractDialect {
 		StringBuilder pagingSelect = new StringBuilder(sql.length() + 100)
 				.append(sql.substring(0, startOfSelect)) // add the comment
 				.append("select * from ( select ").append(getRowNumber(sql));
-		if (hasDistinct(sql)) {
+		if (hasDistinct(sql) || hasGroupBy(sql)) {
 			pagingSelect.append(" row_.* from ( ")
 					.append(sql.substring(startOfSelect)).append(" ) as row_");
 		} else {
