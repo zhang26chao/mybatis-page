@@ -122,7 +122,7 @@ public class PagePlugin implements Interceptor {
 		PreparedStatement countStmt = null;
 		ResultSet rs = null;
 		try {
-			String countSql = getCountSql(boundSql.getSql().trim());
+			String countSql = dialect.getCountSql(boundSql.getSql().trim());
 			countStmt = connection.prepareStatement(countSql);
 			BoundSql countBS = copyFromBoundSql(ms, boundSql, countSql);
 			DefaultParameterHandler parameterHandler = new DefaultParameterHandler(
@@ -224,10 +224,6 @@ public class PagePlugin implements Interceptor {
 				ms.getConfiguration(), ms.getParameterMap().getId(), ms
 						.getParameterMap().getType(), dest);
 		return parameterMapBuiler.build();
-	}
-
-	private String getCountSql(String sql) {
-		return "SELECT COUNT(*) FROM (" + sql + ") aliasForPage";
 	}
 
 	private BoundSql copyFromBoundSql(MappedStatement ms, BoundSql boundSql,

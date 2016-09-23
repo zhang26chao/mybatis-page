@@ -5,7 +5,7 @@
  */
 package com.fred.page.dialect;
 
-public class DB2Dialect implements Dialect {
+public class DB2Dialect extends AbstractDialect {
 
 	@Override
 	public String getLimitString(String sql) {
@@ -39,10 +39,6 @@ public class DB2Dialect implements Dialect {
 		}
 		rownumber.append(") as rownumber_,");
 		return rownumber.toString();
-	}
-
-	private static boolean hasDistinct(String sql) {
-		return sql.toLowerCase().indexOf("select distinct") >= 0;
 	}
 
 }

@@ -5,7 +5,7 @@
  */
 package com.fred.page.dialect;
 
-public class MySqlDialect implements Dialect {
+public class MySqlDialect extends AbstractDialect {
 
 	@Override
 	public String getLimitString(String sql) {

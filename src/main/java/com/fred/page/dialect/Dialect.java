@@ -9,6 +9,8 @@ public interface Dialect {
 
 	String getLimitString(String sql);
 
+	String getCountSql(String sql);
+
 	boolean useMaxForLimit();
 
 }
