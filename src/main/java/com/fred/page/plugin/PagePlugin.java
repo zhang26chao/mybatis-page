@@ -13,7 +13,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.mapping.BoundSql;
@@ -21,10 +20,8 @@ import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.mapping.ParameterMap;
 import org.apache.ibatis.mapping.ParameterMapping;
 import org.apache.ibatis.mapping.SqlSource;
-import org.apache.ibatis.plugin.Interceptor;
 import org.apache.ibatis.plugin.Intercepts;
 import org.apache.ibatis.plugin.Invocation;
-import org.apache.ibatis.plugin.Plugin;
 import org.apache.ibatis.plugin.Signature;
 import org.apache.ibatis.reflection.DefaultReflectorFactory;
 import org.apache.ibatis.reflection.MetaObject;
@@ -43,7 +40,7 @@ import com.fred.page.domain.DalPage;
 @Intercepts({ @Signature(type = Executor.class, method = "query", args = {
 		MappedStatement.class, Object.class, RowBounds.class,
 		ResultHandler.class }) })
-public class PagePlugin implements Interceptor {
+public class PagePlugin extends AbstractIntercetor {
 
 	private final static ObjectFactory DEFAULT_OBJECT_FACTORY = new DefaultObjectFactory();
 	private final static ObjectWrapperFactory DEFAULT_OBJECT_WRAPPER_FACTORY = new DefaultObjectWrapperFactory();
@@ -243,15 +240,6 @@ public class PagePlugin implements Interceptor {
 	private int getMaxOrLimit(RowBounds rowBounds) {
 		return dialect.useMaxForLimit() ? rowBounds.getOffset()
 				+ rowBounds.getLimit() : rowBounds.getLimit();
-	}
-
-	@Override
-	public Object plugin(Object target) {
-		return Plugin.wrap(target, this);
-	}
-
-	@Override
-	public void setProperties(Properties properties) {
 	}
 
 	public static class SimpleSqlSource implements SqlSource {
